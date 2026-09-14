@@ -225,6 +225,18 @@ const Storage = (() => {
     return cleaned;
   }
 
+  const KEY_SEED_APPLIED = 'ssat_verbal_seed_applied_v2';
+
+  // Runs once per browser: appends a starter word list to whatever's already
+  // in the bank, skipping any word already present (by spelling). Safe to
+  // call on every page load — after the first run it's a no-op forever,
+  // even if every word is later deleted.
+  function seedWordsOnce(seedList) {
+    if (localStorage.getItem(KEY_SEED_APPLIED)) return;
+    mergeWords(seedList);
+    localStorage.setItem(KEY_SEED_APPLIED, '1');
+  }
+
   return {
     getWords,
     saveWords,
@@ -241,5 +253,10 @@ const Storage = (() => {
     importWordsFromFile,
     mergeWords,
     replaceWords,
+    seedWordsOnce,
   };
 })();
+
+if (typeof SEED_WORDS !== 'undefined') {
+  Storage.seedWordsOnce(SEED_WORDS);
+}
