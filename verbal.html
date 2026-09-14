@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verbal — SSAT Prep</title>
+  <meta name="description" content="Build a personal hard-word bank and drill synonyms, antonyms, and definitions." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23202430'/%3E%3Ccircle cx='50' cy='50' r='34' fill='none' stroke='%23F4C94C' stroke-width='10'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="index.html">
+        <span class="logo-badge">✓</span>
+        SSAT Prep
+      </a>
+      <nav class="main-nav" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="verbal.html" aria-current="page">Verbal</a>
+        <a href="reading.html">Reading</a>
+        <a href="quantitative.html">Quantitative</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="section-head" style="margin-top: 32px;">
+        <span class="tag">Verbal</span>
+        <h2>Vocabulary Bank &amp; Practice</h2>
+      </div>
+
+      <div class="tabbar" role="tablist" aria-label="Verbal section">
+        <button class="tab-btn" id="tab-btn-bank" role="tab" aria-selected="true" aria-controls="tab-bank">Word Bank</button>
+        <button class="tab-btn" id="tab-btn-quiz" role="tab" aria-selected="false" aria-controls="tab-quiz">Practice Quiz</button>
+      </div>
+
+      <!-- ============================= WORD BANK TAB ============================= -->
+      <section id="tab-bank" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-btn-bank">
+
+        <div class="card add-word-panel">
+          <button class="add-word-toggle" id="add-word-toggle" aria-expanded="false" aria-controls="add-word-body">
+            <span class="plus" aria-hidden="true">+</span>
+            <span>Add a hard word</span>
+          </button>
+          <div class="add-word-body" id="add-word-body" hidden>
+            <form id="add-word-form" novalidate>
+              <div class="lookup-row">
+                <div class="field">
+                  <label for="input-word">Word</label>
+                  <input type="text" id="input-word" name="word" autocomplete="off" required placeholder="e.g. audacious" />
+                </div>
+                <button type="button" class="btn btn-sm" id="lookup-btn">Look Up</button>
+              </div>
+              <p class="lookup-status" id="lookup-status" aria-live="polite"></p>
+
+              <div class="field-grid">
+                <div class="field">
+                  <label for="input-pos">Part of Speech</label>
+                  <select id="input-pos" name="partOfSpeech">
+                    <option value="">Not sure</option>
+                    <option value="noun">Noun</option>
+                    <option value="verb">Verb</option>
+                    <option value="adjective">Adjective</option>
+                    <option value="adverb">Adverb</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="input-meaning">Meaning</label>
+                  <input type="text" id="input-meaning" name="meaning" required placeholder="Short definition" />
+                </div>
+                <div class="field span-2">
+                  <label for="input-synonyms">Synonyms <span class="hint">(comma-separated, optional but powers the synonym quiz)</span></label>
+                  <input type="text" id="input-synonyms" name="synonyms" placeholder="bold, daring, fearless" />
+                </div>
+                <div class="field span-2">
+                  <label for="input-antonyms">Antonyms <span class="hint">(comma-separated, optional but powers the antonym quiz)</span></label>
+                  <input type="text" id="input-antonyms" name="antonyms" placeholder="timid, cautious, meek" />
+                </div>
+              </div>
+
+              <input type="hidden" id="input-edit-id" value="" />
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary" id="save-word-btn">Save Word</button>
+                <button type="button" class="btn btn-ghost" id="cancel-word-btn">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="field search-box" style="margin-bottom:0;">
+            <input type="search" id="search-input" placeholder="Search your word bank&hellip;" aria-label="Search word bank" />
+          </div>
+          <div class="btn-row">
+            <span class="text-soft" id="word-count-label" style="font-family: var(--font-display); font-size: 12px;"></span>
+            <button class="btn btn-sm" id="export-btn">Export Backup</button>
+            <button class="btn btn-sm" id="import-btn">Import Backup</button>
+            <input type="file" id="import-file" accept="application/json" hidden />
+          </div>
+        </div>
+
+        <div id="word-grid" class="word-grid"></div>
+        <div id="empty-state" class="empty-state card" hidden>
+          <span class="module-badge">V</span>
+          <h3>Your word bank is empty</h3>
+          <p class="text-soft">Add the first hard word above &mdash; you need at least a few before a quiz can generate good multiple-choice options.</p>
+        </div>
+      </section>
+
+      <!-- ============================= PRACTICE QUIZ TAB ============================= -->
+      <section id="tab-quiz" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-quiz" hidden>
+
+        <div id="quiz-setup" class="card quiz-setup">
+          <div class="card-pad">
+            <fieldset>
+              <legend>Question Types</legend>
+              <div class="checkbox-row"><input type="checkbox" id="qt-meaning" checked><label for="qt-meaning">Meaning &mdash; pick the definition</label></div>
+              <div class="checkbox-row" style="margin-top:8px;"><input type="checkbox" id="qt-synonym" checked><label for="qt-synonym">Synonym &mdash; pick the word that means the same</label></div>
+              <div class="checkbox-row" style="margin-top:8px;"><input type="checkbox" id="qt-antonym" checked><label for="qt-antonym">Antonym &mdash; pick the word that means the opposite</label></div>
+            </fieldset>
+
+            <div class="field" style="max-width: 220px; margin-top: 20px;">
+              <label for="qt-count">Number of Questions</label>
+              <select id="qt-count">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="all">All available</option>
+              </select>
+            </div>
+
+            <div class="checkbox-row" style="margin-top: 14px;">
+              <input type="checkbox" id="qt-learning-only">
+              <label for="qt-learning-only">Focus on words I haven't mastered yet</label>
+            </div>
+
+            <p class="lookup-status" id="quiz-setup-status" aria-live="polite" style="margin-top: 14px;"></p>
+
+            <div class="btn-row" style="margin-top: 18px;">
+              <button class="btn btn-primary" id="start-quiz-btn">Start Quiz</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="quiz-play" class="card" hidden>
+          <div class="card-pad quiz-card-anim" id="quiz-play-inner">
+            <div class="quiz-progress">
+              <span id="quiz-progress-label">Question 1 / 10</span>
+              <span id="quiz-score-label">Score: 0</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+            <p class="quiz-prompt" id="quiz-instruction">Choose the meaning of:</p>
+            <h3 class="quiz-target" id="quiz-target">WORD</h3>
+
+            <div class="bubble-list" id="bubble-list" role="radiogroup" aria-label="Answer choices"></div>
+
+            <div class="quiz-feedback" id="quiz-feedback" role="status"></div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary" id="submit-answer-btn" disabled>Submit Answer</button>
+              <button class="btn" id="next-question-btn" hidden>Next Question</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="quiz-result" class="card" hidden>
+          <div class="card-pad quiz-result">
+            <p class="score-label">Quiz Complete</p>
+            <div class="score" id="result-score">0/0</div>
+            <p class="text-soft" id="result-pct">0%</p>
+
+            <div class="missed-list" id="missed-list"></div>
+
+            <div class="btn-row" style="justify-content:center;">
+              <button class="btn btn-primary" id="retry-missed-btn">Retry Missed Words</button>
+              <button class="btn" id="new-quiz-btn">New Quiz</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      Words save automatically to this browser. Click <strong>Export Backup</strong> anytime to
+      save a copy to your Downloads folder.
+    </div>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script src="js/dictionary.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/wordbank.js"></script>
+  <script src="js/quiz.js"></script>
+</body>
+</html>

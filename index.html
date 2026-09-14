@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSAT Prep</title>
+  <meta name="description" content="A self-paced SSAT practice log for verbal, reading, and quantitative skills." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23202430'/%3E%3Ccircle cx='50' cy='50' r='34' fill='none' stroke='%23F4C94C' stroke-width='10'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="index.html">
+        <span class="logo-badge">✓</span>
+        SSAT Prep
+      </a>
+      <nav class="main-nav" aria-label="Main">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="verbal.html">Verbal</a>
+        <a href="reading.html">Reading</a>
+        <a href="quantitative.html">Quantitative</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div class="hero-sheet">
+          <h1 class="visually-hidden">SSAT Prep — Verbal, Reading &amp; Quantitative Practice</h1>
+          <div class="grid-title" aria-hidden="true">
+            <div class="grid-word">
+              <span class="grid-box">S</span>
+              <span class="grid-box">S</span>
+              <span class="grid-box">A</span>
+              <span class="grid-box">T</span>
+            </div>
+            <div class="grid-word">
+              <span class="grid-box">P</span>
+              <span class="grid-box">R</span>
+              <span class="grid-box">E</span>
+              <span class="grid-box">P</span>
+            </div>
+          </div>
+          <p class="hero-tagline">Verbal &middot; Reading Comprehension &middot; Quantitative</p>
+          <p class="hero-copy">
+            Every hard word you run into goes in your own bank. Come back and it turns into
+            a quiz — synonyms, antonyms, and definitions, multiple choice, scored like an
+            answer sheet.
+          </p>
+          <div class="log-strip" id="log-strip" aria-label="Your practice log">
+            <div class="log-stat">
+              <span class="num" id="stat-words">0</span>
+              <span class="label">Words Banked</span>
+            </div>
+            <div class="log-stat">
+              <span class="num" id="stat-mastered">0</span>
+              <span class="label">Mastered</span>
+            </div>
+            <div class="log-stat">
+              <span class="num" id="stat-quizzes">0</span>
+              <span class="label">Quizzes Taken</span>
+            </div>
+            <div class="log-stat">
+              <span class="num" id="stat-best">&mdash;</span>
+              <span class="label">Best Score</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="module-grid">
+        <a class="module-card" href="verbal.html">
+          <span class="module-badge">V</span>
+          <h3>Verbal</h3>
+          <p>Log tough words as you meet them, then drill synonyms, antonyms &amp; meanings.</p>
+          <span class="module-status"><span class="dot"></span> Ready to practice</span>
+        </a>
+
+        <a class="module-card is-locked" href="reading.html">
+          <span class="module-badge">R</span>
+          <h3>Reading Comprehension</h3>
+          <p>Passages, inference, and main-idea questions.</p>
+          <span class="module-status"><span class="dot"></span> Coming soon</span>
+        </a>
+
+        <a class="module-card is-locked" href="quantitative.html">
+          <span class="module-badge">Q</span>
+          <h3>Quantitative</h3>
+          <p>Math reasoning and problem-solving practice.</p>
+          <span class="module-status"><span class="dot"></span> Coming soon</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      Your word bank is saved in this browser (<strong>localStorage</strong>) — export a backup
+      anytime from the Verbal page so it's never just one browser away from gone.
+    </div>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
