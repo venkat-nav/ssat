@@ -119,10 +119,10 @@
         <div id="quiz-setup" class="card quiz-setup">
           <div class="card-pad">
             <fieldset>
-              <legend>Question Types</legend>
-              <div class="checkbox-row"><input type="checkbox" id="qt-meaning" checked><label for="qt-meaning">Meaning &mdash; pick the definition</label></div>
-              <div class="checkbox-row" style="margin-top:8px;"><input type="checkbox" id="qt-synonym" checked><label for="qt-synonym">Synonym &mdash; pick the word that means the same</label></div>
-              <div class="checkbox-row" style="margin-top:8px;"><input type="checkbox" id="qt-antonym" checked><label for="qt-antonym">Antonym &mdash; pick the word that means the opposite</label></div>
+              <legend>Quiz Type <span class="hint">(pick one &mdash; each quiz drills a single skill)</span></legend>
+              <div class="checkbox-row"><input type="radio" name="quiz-type" id="qt-meaning" checked><label for="qt-meaning">Meaning &mdash; pick the definition</label></div>
+              <div class="checkbox-row" style="margin-top:8px;"><input type="radio" name="quiz-type" id="qt-synonym"><label for="qt-synonym">Synonym &mdash; pick the word that means the same</label></div>
+              <div class="checkbox-row" style="margin-top:8px;"><input type="radio" name="quiz-type" id="qt-antonym"><label for="qt-antonym">Antonym &mdash; pick the word that means the opposite</label></div>
             </fieldset>
 
             <div class="field" style="max-width: 220px; margin-top: 20px;">

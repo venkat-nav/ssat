@@ -61,30 +61,23 @@
   }
 
   function readConfig() {
+    const type = els.qtSynonym.checked ? 'synonym' : els.qtAntonym.checked ? 'antonym' : 'meaning';
     return {
-      types: {
-        meaning: els.qtMeaning.checked,
-        synonym: els.qtSynonym.checked,
-        antonym: els.qtAntonym.checked,
-      },
+      type,
       count: els.qtCount.value === 'all' ? 'all' : parseInt(els.qtCount.value, 10),
       learningOnly: els.qtLearningOnly.checked,
     };
   }
 
   // -- Question pool ---------------------------------------------------------
+  // Each quiz drills exactly one skill — meaning, synonym, or antonym — never
+  // a mix, so a student can focus practice on the one they're weak on.
 
-  function eligibleCandidates(words, types, learningOnly) {
+  function eligibleWords(words, type, learningOnly) {
     const pool = learningOnly ? words.filter((w) => Storage.computeMastery(w) !== 'mastered') : words;
-    return pool
-      .map((w) => {
-        const eligibleTypes = [];
-        if (types.meaning) eligibleTypes.push('meaning');
-        if (types.synonym && w.synonyms && w.synonyms.length) eligibleTypes.push('synonym');
-        if (types.antonym && w.antonyms && w.antonyms.length) eligibleTypes.push('antonym');
-        return { word: w, eligibleTypes };
-      })
-      .filter((c) => c.eligibleTypes.length > 0);
+    if (type === 'synonym') return pool.filter((w) => w.synonyms && w.synonyms.length);
+    if (type === 'antonym') return pool.filter((w) => w.antonyms && w.antonyms.length);
+    return pool; // every word has a meaning
   }
 
   function buildQuestion(word, type, allWords) {
@@ -142,7 +135,7 @@
 
   function generateQuestions(config) {
     const words = Storage.getWords();
-    const candidates = eligibleCandidates(words, config.types, config.learningOnly);
+    const candidates = eligibleWords(words, config.type, config.learningOnly);
     if (candidates.length === 0) return { questions: [], available: 0, words };
 
     const shuffled = shuffle(candidates);
@@ -150,7 +143,7 @@
     const chosen = shuffled.slice(0, desired);
 
     const questions = chosen
-      .map((c) => buildQuestion(c.word, pickRandom(c.eligibleTypes), words))
+      .map((w) => buildQuestion(w, config.type, words))
       .filter((q) => q.options.length >= 2);
 
     return { questions, available: candidates.length, words };
@@ -160,24 +153,18 @@
 
   function updatePreview() {
     const config = readConfig();
-    if (!config.types.meaning && !config.types.synonym && !config.types.antonym) {
-      els.setupStatus.textContent = 'Pick at least one question type.';
-      els.setupStatus.className = 'lookup-status is-error';
-      els.startBtn.disabled = true;
-      return;
-    }
     const { questions } = generateQuestions(config);
     if (questions.length === 0) {
       const total = Storage.getWords().length;
       els.setupStatus.textContent =
         total === 0
           ? 'Your word bank is empty — add some words on the Word Bank tab first.'
-          : "No words match these settings yet. Try adding synonyms/antonyms to your words, or check 'Meaning'.";
+          : `None of your words have ${config.type === 'meaning' ? 'a meaning' : `${config.type}s`} recorded yet — add some on the Word Bank tab, or pick a different quiz type.`;
       els.setupStatus.className = 'lookup-status is-error';
       els.startBtn.disabled = true;
       return;
     }
-    els.setupStatus.textContent = `${questions.length} question${questions.length === 1 ? '' : 's'} ready with your current word bank.`;
+    els.setupStatus.textContent = `${questions.length} ${config.type} question${questions.length === 1 ? '' : 's'} ready with your current word bank.`;
     els.setupStatus.className = 'lookup-status is-ok';
     els.startBtn.disabled = false;
   }
