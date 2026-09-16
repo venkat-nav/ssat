@@ -809,6 +809,12 @@ legend {
   word-break: break-word;
 }
 
+.quiz-target.is-analogy {
+  font-size: 21px;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
 .bubble-list {
   display: flex;
   flex-direction: column;
