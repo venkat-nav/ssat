@@ -225,7 +225,7 @@ const Storage = (() => {
     return cleaned;
   }
 
-  const KEY_SEED_APPLIED = 'ssat_verbal_seed_applied_v2';
+  const KEY_SEED_APPLIED = 'ssat_verbal_seed_applied_v4';
 
   // Runs once per browser: appends a starter word list to whatever's already
   // in the bank, skipping any word already present (by spelling). Safe to
