@@ -718,6 +718,14 @@ legend {
 .badge-learning { background: var(--pencil-tint); color: var(--pencil-dark); border-color: var(--pencil); }
 .badge-mastered { background: var(--correct-tint); color: var(--correct); border-color: var(--correct); }
 
+.word-card .quiz-stat-line {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  margin: 0 0 8px 18px;
+  letter-spacing: 0.02em;
+}
+
 .word-card .meaning {
   font-size: 14px;
   color: var(--ink);

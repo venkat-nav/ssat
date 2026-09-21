@@ -147,6 +147,28 @@
     return { type, word, target: word.word, instruction, correctAnswer: correct, options, explanation };
   }
 
+  // -- Weighted selection ---------------------------------------------------
+  // Quizzes don't pick words uniformly at random — words the student gets
+  // wrong more often (low accuracy), and words never quizzed yet, are more
+  // likely to come up. It's a bias, not a hard rule: every eligible word can
+  // still appear, and a word already answered correctly every time can still
+  // show up occasionally so it doesn't go stale.
+
+  function priorityWeight(word) {
+    const stats = word.stats || {};
+    const seen = stats.seen || 0;
+    if (seen === 0) return 2.5; // never quizzed — worth introducing
+    const accuracy = (stats.correct || 0) / seen;
+    return 0.3 + (1 - accuracy) * 3.7; // 0% correct → ~4, 100% correct → 0.3
+  }
+
+  function weightedShuffleBy(items, weightFn) {
+    return items
+      .map((item) => ({ item, key: weightFn(item) * Math.random() }))
+      .sort((a, b) => b.key - a.key)
+      .map((x) => x.item);
+  }
+
   // -- Analogies ---------------------------------------------------------
   // "A is to B as C is to ___" — A:B and C:D always share the SAME
   // relationship (both synonym pairs, or both antonym pairs) so the
@@ -201,11 +223,12 @@
       buildAnalogyQuestion(a, c, 'antonym', words)
     );
 
-    const all = shuffle([...synQuestions, ...antQuestions]).filter((q) => q.options.length >= 2);
-    if (all.length === 0) return { questions: [], available: 0, words };
+    const combined = [...synQuestions, ...antQuestions].filter((q) => q.options.length >= 2);
+    const prioritized = weightedShuffleBy(combined, (q) => priorityWeight(q.word));
+    if (prioritized.length === 0) return { questions: [], available: 0, words };
 
-    const desired = config.count === 'all' ? all.length : Math.min(config.count, all.length);
-    return { questions: all.slice(0, desired), available: all.length, words };
+    const desired = config.count === 'all' ? prioritized.length : Math.min(config.count, prioritized.length);
+    return { questions: prioritized.slice(0, desired), available: prioritized.length, words };
   }
 
   function generateQuestions(config) {
@@ -215,9 +238,9 @@
     const candidates = eligibleWords(words, config.type, config.learningOnly);
     if (candidates.length === 0) return { questions: [], available: 0, words };
 
-    const shuffled = shuffle(candidates);
-    const desired = config.count === 'all' ? shuffled.length : Math.min(config.count, shuffled.length);
-    const chosen = shuffled.slice(0, desired);
+    const prioritized = weightedShuffleBy(candidates, priorityWeight);
+    const desired = config.count === 'all' ? prioritized.length : Math.min(config.count, prioritized.length);
+    const chosen = prioritized.slice(0, desired);
 
     const questions = chosen
       .map((w) => buildQuestion(w, config.type, words))

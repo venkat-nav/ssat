@@ -98,6 +98,10 @@
     const antChips = (word.antonyms || [])
       .map((s) => `<span class="chip chip-ant">${escapeHtml(s)}</span>`)
       .join('');
+    const stats = word.stats || {};
+    const statsLine = stats.seen
+      ? `${stats.correct || 0} / ${stats.seen} correct in quizzes`
+      : 'Not quizzed yet';
 
     return `
       <article class="word-card" data-id="${word.id}">
@@ -107,6 +111,7 @@
           }</div>
           <span class="badge badge-${level}">${masteryLabel(level)}</span>
         </div>
+        <p class="quiz-stat-line">${statsLine}</p>
         <p class="meaning">${escapeHtml(word.meaning)}</p>
         ${word.synonyms && word.synonyms.length ? `<p class="chip-label">Synonyms</p><div class="chip-group">${synChips}</div>` : ''}
         ${word.antonyms && word.antonyms.length ? `<p class="chip-label">Antonyms</p><div class="chip-group">${antChips}</div>` : ''}
