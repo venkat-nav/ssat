@@ -82,6 +82,11 @@
                   <label for="input-antonyms">Antonyms <span class="hint">(comma-separated, optional but powers the antonym quiz)</span></label>
                   <input type="text" id="input-antonyms" name="antonyms" placeholder="timid, cautious, meek" />
                 </div>
+                <div class="field span-2">
+                  <label for="input-set">Word Set <span class="hint">(groups words for filtering &amp; quizzes — leave blank for "Core List")</span></label>
+                  <input type="text" id="input-set" name="set" list="set-options" placeholder="Core List" />
+                  <datalist id="set-options"></datalist>
+                </div>
               </div>
 
               <input type="hidden" id="input-edit-id" value="" />
@@ -96,6 +101,11 @@
         <div class="toolbar">
           <div class="field search-box" style="margin-bottom:0;">
             <input type="search" id="search-input" placeholder="Search your word bank&hellip;" aria-label="Search word bank" />
+          </div>
+          <div class="field" style="margin-bottom:0; min-width: 160px;">
+            <select id="set-filter" aria-label="Filter by word set">
+              <option value="">All Sets</option>
+            </select>
           </div>
           <div class="btn-row">
             <span class="text-soft" id="word-count-label" style="font-family: var(--font-display); font-size: 12px;"></span>
@@ -118,7 +128,14 @@
 
         <div id="quiz-setup" class="card quiz-setup">
           <div class="card-pad">
-            <fieldset>
+            <div class="field" style="max-width: 260px;">
+              <label for="qt-set">Word Set</label>
+              <select id="qt-set">
+                <option value="">All Sets</option>
+              </select>
+            </div>
+
+            <fieldset style="margin-top: 20px;">
               <legend>Quiz Type <span class="hint">(pick one &mdash; each quiz drills a single skill)</span></legend>
               <div class="checkbox-row"><input type="radio" name="quiz-type" id="qt-meaning" checked><label for="qt-meaning">Meaning &mdash; pick the definition</label></div>
               <div class="checkbox-row" style="margin-top:8px;"><input type="radio" name="quiz-type" id="qt-synonym"><label for="qt-synonym">Synonym &mdash; pick the word that means the same</label></div>

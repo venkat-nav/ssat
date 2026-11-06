@@ -13,6 +13,9 @@
     meaning: document.getElementById('input-meaning'),
     synonyms: document.getElementById('input-synonyms'),
     antonyms: document.getElementById('input-antonyms'),
+    set: document.getElementById('input-set'),
+    setOptions: document.getElementById('set-options'),
+    setFilter: document.getElementById('set-filter'),
     editId: document.getElementById('input-edit-id'),
     lookupBtn: document.getElementById('lookup-btn'),
     lookupStatus: document.getElementById('lookup-status'),
@@ -75,6 +78,7 @@
     els.meaning.value = word.meaning;
     els.synonyms.value = (word.synonyms || []).join(', ');
     els.antonyms.value = (word.antonyms || []).join(', ');
+    els.set.value = word.set || '';
     els.saveBtn.textContent = 'Update Word';
     setLookupStatus('', null);
     openPanel();
@@ -102,6 +106,7 @@
     const statsLine = stats.seen
       ? `${stats.correct || 0} / ${stats.seen} correct in quizzes`
       : 'Not quizzed yet';
+    const setLabel = Storage.effectiveSet(word);
 
     return `
       <article class="word-card" data-id="${word.id}">
@@ -111,7 +116,7 @@
           }</div>
           <span class="badge badge-${level}">${masteryLabel(level)}</span>
         </div>
-        <p class="quiz-stat-line">${statsLine}</p>
+        <p class="quiz-stat-line">${statsLine} &middot; ${escapeHtml(setLabel)}</p>
         <p class="meaning">${escapeHtml(word.meaning)}</p>
         ${word.synonyms && word.synonyms.length ? `<p class="chip-label">Synonyms</p><div class="chip-group">${synChips}</div>` : ''}
         ${word.antonyms && word.antonyms.length ? `<p class="chip-label">Antonyms</p><div class="chip-group">${antChips}</div>` : ''}
@@ -123,14 +128,32 @@
     `;
   }
 
+  // Keeps the Word Set <select> (filter) and <datalist> (add/edit form
+  // suggestions) in sync with whatever sets currently exist — called on
+  // every render since a new set name can appear at any time.
+  function refreshSetOptions() {
+    const sets = Storage.getSets();
+    const currentFilter = els.setFilter.value;
+    els.setFilter.innerHTML =
+      `<option value="">All Sets</option>` +
+      sets.map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+    if (sets.includes(currentFilter)) els.setFilter.value = currentFilter;
+
+    els.setOptions.innerHTML = sets.map((s) => `<option value="${escapeHtml(s)}"></option>`).join('');
+  }
+
   function render() {
+    refreshSetOptions();
+
     const all = Storage.getWords();
     const term = (els.search.value || '').trim().toLowerCase();
-    const filtered = term
-      ? all.filter(
-          (w) => w.word.toLowerCase().includes(term) || w.meaning.toLowerCase().includes(term)
-        )
-      : all;
+    const setFilter = els.setFilter.value;
+
+    const filtered = all.filter((w) => {
+      const matchesTerm = !term || w.word.toLowerCase().includes(term) || w.meaning.toLowerCase().includes(term);
+      const matchesSet = !setFilter || Storage.effectiveSet(w) === setFilter;
+      return matchesTerm && matchesSet;
+    });
 
     const sorted = [...filtered].sort(
       (a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
@@ -150,7 +173,9 @@
     if (sorted.length === 0) {
       els.emptyState.hidden = false;
       els.emptyState.querySelector('h3').textContent = 'No matches';
-      els.emptyState.querySelector('p').textContent = `Nothing in your word bank matches "${term}".`;
+      els.emptyState.querySelector('p').textContent = term
+        ? `Nothing in "${setFilter || 'All Sets'}" matches "${term}".`
+        : `No words in "${setFilter}" yet.`;
       els.grid.innerHTML = '';
       return;
     }
@@ -192,6 +217,7 @@
       meaning,
       synonyms: splitList(els.synonyms.value),
       antonyms: splitList(els.antonyms.value),
+      set: els.set.value.trim(),
     };
 
     const editId = els.editId.value;
@@ -228,6 +254,7 @@
   });
 
   els.search.addEventListener('input', render);
+  els.setFilter.addEventListener('change', render);
 
   // -- Lookup ---------------------------------------------------------------
 

@@ -7,6 +7,7 @@
 (() => {
   const els = {
     setup: document.getElementById('quiz-setup'),
+    qtSet: document.getElementById('qt-set'),
     qtMeaning: document.getElementById('qt-meaning'),
     qtSynonym: document.getElementById('qt-synonym'),
     qtAntonym: document.getElementById('qt-antonym'),
@@ -78,15 +79,19 @@
       type,
       count: els.qtCount.value === 'all' ? 'all' : parseInt(els.qtCount.value, 10),
       learningOnly: els.qtLearningOnly.checked,
+      setFilter: els.qtSet.value,
     };
   }
 
   // -- Question pool ---------------------------------------------------------
   // Each quiz drills exactly one skill — meaning, synonym, or antonym — never
-  // a mix, so a student can focus practice on the one they're weak on.
+  // a mix, so a student can focus practice on the one they're weak on. It can
+  // also be scoped to a single word set (e.g. just "New Words") via setFilter
+  // — empty string means no scoping, pull from every set.
 
-  function eligibleWords(words, type, learningOnly) {
-    const pool = learningOnly ? words.filter((w) => Storage.computeMastery(w) !== 'mastered') : words;
+  function eligibleWords(words, type, learningOnly, setFilter) {
+    let pool = learningOnly ? words.filter((w) => Storage.computeMastery(w) !== 'mastered') : words;
+    if (setFilter) pool = pool.filter((w) => Storage.effectiveSet(w) === setFilter);
     if (type === 'synonym') return pool.filter((w) => w.synonyms && w.synonyms.length);
     if (type === 'antonym') return pool.filter((w) => w.antonyms && w.antonyms.length);
     return pool; // every word has a meaning
@@ -216,10 +221,10 @@
 
   function generateAnalogyQuestions(config) {
     const words = Storage.getWords();
-    const synQuestions = pairUp(eligibleWords(words, 'synonym', config.learningOnly)).map(([a, c]) =>
+    const synQuestions = pairUp(eligibleWords(words, 'synonym', config.learningOnly, config.setFilter)).map(([a, c]) =>
       buildAnalogyQuestion(a, c, 'synonym', words)
     );
-    const antQuestions = pairUp(eligibleWords(words, 'antonym', config.learningOnly)).map(([a, c]) =>
+    const antQuestions = pairUp(eligibleWords(words, 'antonym', config.learningOnly, config.setFilter)).map(([a, c]) =>
       buildAnalogyQuestion(a, c, 'antonym', words)
     );
 
@@ -235,7 +240,7 @@
     if (config.type === 'analogy') return generateAnalogyQuestions(config);
 
     const words = Storage.getWords();
-    const candidates = eligibleWords(words, config.type, config.learningOnly);
+    const candidates = eligibleWords(words, config.type, config.learningOnly, config.setFilter);
     if (candidates.length === 0) return { questions: [], available: 0, words };
 
     const prioritized = weightedShuffleBy(candidates, priorityWeight);
@@ -249,9 +254,9 @@
     return { questions, available: candidates.length, words };
   }
 
-  function regenerateFromMissed(m, words) {
+  function regenerateFromMissed(m, words, setFilter) {
     if (m.type === 'analogy') {
-      const pool = eligibleWords(words, m.relation, false).filter((w) => w.id !== m.word.id);
+      const pool = eligibleWords(words, m.relation, false, setFilter).filter((w) => w.id !== m.word.id);
       if (pool.length === 0) return null;
       return buildAnalogyQuestion(pickRandom(pool), m.word, m.relation, words);
     }
@@ -260,30 +265,44 @@
 
   // -- Setup screen / live availability preview ------------------------------
 
+  // Keeps the Word Set dropdown in sync with whatever sets currently exist
+  // — called every time the preview updates, since a new set can appear at
+  // any time (e.g. right after adding words on the Word Bank tab).
+  function refreshQuizSetOptions() {
+    const sets = Storage.getSets();
+    const current = els.qtSet.value;
+    els.qtSet.innerHTML =
+      `<option value="">All Sets</option>` +
+      sets.map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+    if (sets.includes(current)) els.qtSet.value = current;
+  }
+
   function updatePreview() {
+    refreshQuizSetOptions();
     const config = readConfig();
     const { questions } = generateQuestions(config);
+    const scoped = config.setFilter ? ` in "${config.setFilter}"` : '';
     if (questions.length === 0) {
       const total = Storage.getWords().length;
       if (total === 0) {
         els.setupStatus.textContent = 'Your word bank is empty — add some words on the Word Bank tab first.';
       } else if (config.type === 'analogy') {
         els.setupStatus.textContent =
-          'You need at least 2 words with synonyms, or 2 with antonyms, to build analogy questions — add some on the Word Bank tab.';
+          `You need at least 2 words with synonyms, or 2 with antonyms,${scoped} to build analogy questions.`;
       } else {
         const need = config.type === 'meaning' ? 'a meaning' : `${config.type}s`;
-        els.setupStatus.textContent = `None of your words have ${need} recorded yet — add some on the Word Bank tab, or pick a different quiz type.`;
+        els.setupStatus.textContent = `None of your words${scoped} have ${need} recorded yet — add some, or pick a different quiz type${config.setFilter ? ' or word set' : ''}.`;
       }
       els.setupStatus.className = 'lookup-status is-error';
       els.startBtn.disabled = true;
       return;
     }
-    els.setupStatus.textContent = `${questions.length} ${TYPE_LABELS[config.type]} question${questions.length === 1 ? '' : 's'} ready with your current word bank.`;
+    els.setupStatus.textContent = `${questions.length} ${TYPE_LABELS[config.type]} question${questions.length === 1 ? '' : 's'} ready${scoped || ' from your word bank'}.`;
     els.setupStatus.className = 'lookup-status is-ok';
     els.startBtn.disabled = false;
   }
 
-  [els.qtMeaning, els.qtSynonym, els.qtAntonym, els.qtAnalogy, els.qtCount, els.qtLearningOnly].forEach((el) => {
+  [els.qtSet, els.qtMeaning, els.qtSynonym, els.qtAntonym, els.qtAnalogy, els.qtCount, els.qtLearningOnly].forEach((el) => {
     el.addEventListener('change', updatePreview);
   });
 
@@ -298,8 +317,8 @@
     els.result.hidden = name !== 'result';
   }
 
-  function startSession(questions) {
-    session = { questions, index: 0, score: 0, missed: [] };
+  function startSession(questions, setFilter) {
+    session = { questions, index: 0, score: 0, missed: [], setFilter: setFilter || '' };
     showScreen('play');
     renderQuestion();
   }
@@ -308,7 +327,7 @@
     const config = readConfig();
     const { questions } = generateQuestions(config);
     if (questions.length === 0) return;
-    startSession(questions);
+    startSession(questions, config.setFilter);
   });
 
   function renderQuestion() {
@@ -450,10 +469,10 @@
     if (!session || session.missed.length === 0) return;
     const words = Storage.getWords();
     const retryQuestions = session.missed
-      .map((m) => regenerateFromMissed(m, words))
+      .map((m) => regenerateFromMissed(m, words, session.setFilter))
       .filter((q) => q && q.options.length >= 2);
     if (retryQuestions.length === 0) return;
-    startSession(retryQuestions);
+    startSession(retryQuestions, session.setFilter);
   });
 
   els.newQuizBtn.addEventListener('click', () => {

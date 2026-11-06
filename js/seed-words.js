@@ -1,5 +1,5 @@
 /* ==========================================================================
-   seed-words.js — a starter vocabulary list, added once to a new word bank
+   seed-words.js — starter vocabulary sets, added once to a new word bank
    (see Storage.seedWordsOnce in storage.js). Definitions/synonyms/antonyms
    written by hand rather than pulled from the dictionary APIs.
    Concrete/technical nouns without a real antonym (lavatory, silo, writ,
@@ -8,9 +8,18 @@
 
    Note: "Bouyant" (as given) is a common misspelling — stored here with
    its correct spelling, "Buoyant".
+
+   SEED_SETS is a list of named word sets. Each word is tagged with its
+   set's `name` when it's first merged into the bank (see
+   Storage.seedWordsOnce), so later sets stay distinguishable from earlier
+   ones in the Word Bank filter and in quiz setup — a fresh batch of words
+   doesn't get silently absorbed into the existing pile.
    ========================================================================== */
 
-const SEED_WORDS = [
+const SEED_SETS = [
+  {
+    name: 'Core List',
+    words: [
   {
     word: 'Defilement',
     partOfSpeech: 'noun',
@@ -2256,5 +2265,269 @@ const SEED_WORDS = [
     meaning: 'Showing great energy or enthusiasm in pursuit of a cause.',
     synonyms: ['enthusiastic', 'fervent', 'ardent', 'passionate'],
     antonyms: ['apathetic', 'indifferent', 'half-hearted'],
+  },
+    ],
+  },
+  {
+    // From ~/Downloads/NewWords.jpeg — a handwritten list with words only,
+    // no definitions in the photo. Definitions/synonyms/antonyms below are
+    // written from scratch, same as every other set in this file.
+    // Note: "Bak" (as written) is almost certainly "Balk" — stored with
+    // that spelling.
+    name: 'New Words',
+    words: [
+  {
+    word: 'Implore',
+    partOfSpeech: 'verb',
+    meaning: 'To beg someone earnestly or desperately to do something.',
+    synonyms: ['beg', 'plead', 'entreat', 'beseech'],
+    antonyms: [],
+  },
+  {
+    word: 'Assurance',
+    partOfSpeech: 'noun',
+    meaning: 'A positive declaration meant to inspire confidence; confidence itself.',
+    synonyms: ['confidence', 'certainty', 'guarantee', 'promise'],
+    antonyms: ['doubt', 'uncertainty'],
+  },
+  {
+    word: 'Diligent',
+    partOfSpeech: 'adjective',
+    meaning: 'Showing careful and persistent effort in work or duties.',
+    synonyms: ['industrious', 'hardworking', 'conscientious', 'meticulous'],
+    antonyms: ['lazy', 'negligent', 'careless'],
+  },
+  {
+    word: 'Disclose',
+    partOfSpeech: 'verb',
+    meaning: 'To make secret or private information known.',
+    synonyms: ['reveal', 'divulge', 'expose', 'unveil'],
+    antonyms: ['conceal', 'hide', 'withhold'],
+  },
+  {
+    word: 'Strenuous',
+    partOfSpeech: 'adjective',
+    meaning: 'Requiring great physical or mental effort.',
+    synonyms: ['arduous', 'demanding', 'taxing', 'laborious'],
+    antonyms: ['easy', 'effortless', 'light'],
+  },
+  {
+    word: 'Perceive',
+    partOfSpeech: 'verb',
+    meaning: 'To become aware of or notice something through the senses or mind.',
+    synonyms: ['notice', 'discern', 'detect', 'observe'],
+    antonyms: ['overlook', 'miss'],
+  },
+  {
+    word: 'Prominent',
+    partOfSpeech: 'adjective',
+    meaning: 'Important, well-known, or noticeable.',
+    synonyms: ['notable', 'eminent', 'conspicuous', 'distinguished'],
+    antonyms: ['obscure', 'inconspicuous', 'unknown'],
+  },
+  {
+    word: 'Antagonist',
+    partOfSpeech: 'noun',
+    meaning: 'A person who actively opposes or is hostile to someone; a story\'s main opponent to the hero.',
+    synonyms: ['adversary', 'opponent', 'rival', 'foe'],
+    antonyms: ['protagonist', 'ally', 'supporter'],
+  },
+  {
+    word: 'Frigid',
+    partOfSpeech: 'adjective',
+    meaning: 'Extremely cold; lacking warmth of feeling.',
+    synonyms: ['freezing', 'icy', 'chilly', 'cold'],
+    antonyms: ['hot', 'warm', 'sweltering'],
+  },
+  {
+    word: 'Ballad',
+    partOfSpeech: 'noun',
+    meaning: 'A narrative poem or song, often about love or adventure.',
+    synonyms: ['song', 'poem', 'anthem'],
+    antonyms: [],
+  },
+  {
+    word: 'Laborious',
+    partOfSpeech: 'adjective',
+    meaning: 'Requiring considerable time and effort; tedious.',
+    synonyms: ['arduous', 'strenuous', 'tedious', 'difficult'],
+    antonyms: ['easy', 'effortless', 'simple'],
+  },
+  {
+    word: 'Mandate',
+    partOfSpeech: 'noun',
+    meaning: 'An official order or authorization to act in a particular way.',
+    synonyms: ['order', 'directive', 'decree', 'authorization'],
+    antonyms: [],
+  },
+  {
+    word: 'Initiate',
+    partOfSpeech: 'verb',
+    meaning: 'To begin or set a process in motion.',
+    synonyms: ['begin', 'start', 'launch', 'commence'],
+    antonyms: ['terminate', 'end', 'conclude'],
+  },
+  {
+    word: 'Bolster',
+    partOfSpeech: 'verb',
+    meaning: 'To support or strengthen something.',
+    synonyms: ['reinforce', 'strengthen', 'support', 'boost'],
+    antonyms: ['undermine', 'weaken'],
+  },
+  {
+    word: 'Balk',
+    partOfSpeech: 'verb',
+    meaning: 'To hesitate or be unwilling to do something; to refuse abruptly.',
+    synonyms: ['hesitate', 'refuse', 'resist', 'recoil'],
+    antonyms: ['embrace', 'accept'],
+  },
+  {
+    word: 'Apparatus',
+    partOfSpeech: 'noun',
+    meaning: 'A set of equipment or tools used for a particular purpose.',
+    synonyms: ['equipment', 'device', 'machinery', 'gear'],
+    antonyms: [],
+  },
+  {
+    word: 'Adjoin',
+    partOfSpeech: 'verb',
+    meaning: 'To be next to or in contact with something; to border.',
+    synonyms: ['border', 'abut', 'connect', 'touch'],
+    antonyms: ['separate', 'detach'],
+  },
+  {
+    word: 'Emphasize',
+    partOfSpeech: 'verb',
+    meaning: 'To give special importance or prominence to something.',
+    synonyms: ['stress', 'highlight', 'underscore', 'accentuate'],
+    antonyms: ['downplay', 'minimize'],
+  },
+  {
+    word: 'Torrent',
+    partOfSpeech: 'noun',
+    meaning: 'A strong, fast-moving stream of liquid; an overwhelming outpouring.',
+    synonyms: ['flood', 'deluge', 'gush', 'cascade'],
+    antonyms: ['trickle', 'drip'],
+  },
+  {
+    word: 'Outspoken',
+    partOfSpeech: 'adjective',
+    meaning: 'Direct and open in stating opinions, especially controversial ones.',
+    synonyms: ['candid', 'blunt', 'forthright', 'vocal'],
+    antonyms: ['reserved', 'reticent', 'guarded'],
+  },
+  {
+    word: 'Headway',
+    partOfSpeech: 'noun',
+    meaning: 'Forward movement or progress, especially when difficult.',
+    synonyms: ['progress', 'advancement', 'momentum'],
+    antonyms: ['setback', 'regression'],
+  },
+  {
+    word: 'Obstruction',
+    partOfSpeech: 'noun',
+    meaning: 'Something that blocks or hinders movement or progress.',
+    synonyms: ['blockage', 'barrier', 'impediment', 'hindrance'],
+    antonyms: ['clearance', 'opening'],
+  },
+  {
+    word: 'Seminar',
+    partOfSpeech: 'noun',
+    meaning: 'A meeting or class for discussion or training on a particular topic.',
+    synonyms: ['workshop', 'conference', 'class'],
+    antonyms: [],
+  },
+  {
+    word: 'Rudder',
+    partOfSpeech: 'noun',
+    meaning: 'A flat piece hinged to the back of a boat or aircraft, used for steering.',
+    synonyms: ['steering mechanism'],
+    antonyms: [],
+  },
+  {
+    word: 'Vertigo',
+    partOfSpeech: 'noun',
+    meaning: 'A sensation of spinning or dizziness, often from heights.',
+    synonyms: ['dizziness', 'giddiness', 'lightheadedness'],
+    antonyms: ['steadiness'],
+  },
+  {
+    word: 'Illustrious',
+    partOfSpeech: 'adjective',
+    meaning: 'Well-known and highly respected, especially for past achievements.',
+    synonyms: ['distinguished', 'renowned', 'eminent', 'celebrated'],
+    antonyms: ['obscure', 'unknown', 'infamous'],
+  },
+  {
+    word: 'Dilapidated',
+    partOfSpeech: 'adjective',
+    meaning: 'In a state of disrepair due to age or neglect.',
+    synonyms: ['run-down', 'decrepit', 'ramshackle', 'crumbling'],
+    antonyms: ['pristine', 'well-kept', 'sturdy'],
+  },
+  {
+    word: 'Vigilant',
+    partOfSpeech: 'adjective',
+    meaning: 'Keeping careful watch for possible danger or difficulty.',
+    synonyms: ['watchful', 'alert', 'attentive', 'wary'],
+    antonyms: ['careless', 'inattentive', 'negligent'],
+  },
+  {
+    word: 'Dutiful',
+    partOfSpeech: 'adjective',
+    meaning: 'Conscientiously fulfilling one\'s obligations or duties.',
+    synonyms: ['conscientious', 'obedient', 'responsible', 'faithful'],
+    antonyms: ['negligent', 'irresponsible', 'disobedient'],
+  },
+  {
+    word: 'Keen',
+    partOfSpeech: 'adjective',
+    meaning: 'Having or showing eagerness, sharp perception, or intensity.',
+    synonyms: ['eager', 'sharp', 'enthusiastic', 'perceptive'],
+    antonyms: ['indifferent', 'dull', 'apathetic'],
+  },
+  {
+    word: 'Dwindle',
+    partOfSpeech: 'verb',
+    meaning: 'To gradually diminish in size, amount, or strength.',
+    synonyms: ['decrease', 'diminish', 'shrink', 'wane'],
+    antonyms: ['grow', 'increase', 'swell'],
+  },
+  {
+    word: 'Chaotic',
+    partOfSpeech: 'adjective',
+    meaning: 'In a state of complete disorder and confusion.',
+    synonyms: ['disordered', 'turbulent', 'disorganized', 'tumultuous'],
+    antonyms: ['orderly', 'organized', 'systematic'],
+  },
+  {
+    word: 'Whim',
+    partOfSpeech: 'noun',
+    meaning: 'A sudden desire or impulsive idea, especially one that is unusual.',
+    synonyms: ['impulse', 'caprice', 'fancy', 'notion'],
+    antonyms: ['plan', 'deliberation'],
+  },
+  {
+    word: 'Assert',
+    partOfSpeech: 'verb',
+    meaning: 'To state a fact or belief confidently and forcefully.',
+    synonyms: ['declare', 'affirm', 'maintain', 'proclaim'],
+    antonyms: ['deny', 'retract'],
+  },
+  {
+    word: 'Veteran',
+    partOfSpeech: 'noun',
+    meaning: 'A person with long experience in a particular field, or a former member of the armed forces.',
+    synonyms: ['expert', 'old hand'],
+    antonyms: ['novice', 'rookie', 'beginner'],
+  },
+  {
+    word: 'Cite',
+    partOfSpeech: 'verb',
+    meaning: 'To quote or refer to as evidence, example, or justification.',
+    synonyms: ['quote', 'reference', 'mention', 'invoke'],
+    antonyms: [],
+  },
+    ],
   },
 ];

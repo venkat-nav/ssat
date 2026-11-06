@@ -46,7 +46,23 @@ const Storage = (() => {
     );
   }
 
-  function addWord({ word, partOfSpeech, meaning, synonyms, antonyms }) {
+  // A word's set is just a free-text label (e.g. "Core List", "New Words").
+  // Words with no set fall back to "Core List" everywhere they're displayed
+  // or filtered — see effectiveSet() — rather than needing a migration to
+  // backfill every word added before sets existed.
+  const DEFAULT_SET = 'Core List';
+
+  function effectiveSet(word) {
+    return (word && word.set && word.set.trim()) || DEFAULT_SET;
+  }
+
+  function getSets() {
+    const names = new Set([DEFAULT_SET]);
+    getWords().forEach((w) => names.add(effectiveSet(w)));
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }
+
+  function addWord({ word, partOfSpeech, meaning, synonyms, antonyms, set }) {
     const words = getWords();
     const entry = {
       id: makeId(),
@@ -55,6 +71,7 @@ const Storage = (() => {
       meaning: meaning.trim(),
       synonyms: normalizeList(synonyms),
       antonyms: normalizeList(antonyms),
+      set: (set || '').trim(),
       addedAt: new Date().toISOString(),
       stats: { seen: 0, correct: 0, incorrect: 0, lastReviewed: null },
     };
@@ -199,6 +216,7 @@ const Storage = (() => {
         meaning: w.meaning.trim(),
         synonyms: normalizeList(w.synonyms),
         antonyms: normalizeList(w.antonyms),
+        set: (w.set || '').trim(),
         addedAt: w.addedAt || new Date().toISOString(),
         stats: w.stats || { seen: 0, correct: 0, incorrect: 0, lastReviewed: null },
       });
@@ -218,6 +236,7 @@ const Storage = (() => {
         meaning: w.meaning.trim(),
         synonyms: normalizeList(w.synonyms),
         antonyms: normalizeList(w.antonyms),
+        set: (w.set || '').trim(),
         addedAt: w.addedAt || new Date().toISOString(),
         stats: w.stats || { seen: 0, correct: 0, incorrect: 0, lastReviewed: null },
       }));
@@ -225,15 +244,18 @@ const Storage = (() => {
     return cleaned;
   }
 
-  const KEY_SEED_APPLIED = 'ssat_verbal_seed_applied_v6';
+  const KEY_SEED_APPLIED = 'ssat_verbal_seed_applied_v7';
 
-  // Runs once per browser: appends a starter word list to whatever's already
-  // in the bank, skipping any word already present (by spelling). Safe to
-  // call on every page load — after the first run it's a no-op forever,
-  // even if every word is later deleted.
-  function seedWordsOnce(seedList) {
+  // Runs once per browser: appends starter word sets to whatever's already
+  // in the bank, skipping any word already present (by spelling) and
+  // tagging each newly-added word with its set's name. Safe to call on
+  // every page load — after the first run it's a no-op forever, even if
+  // every word is later deleted.
+  function seedWordsOnce(seedSets) {
     if (localStorage.getItem(KEY_SEED_APPLIED)) return;
-    mergeWords(seedList);
+    seedSets.forEach(({ name, words }) => {
+      mergeWords(words.map((w) => ({ ...w, set: w.set || name })));
+    });
     localStorage.setItem(KEY_SEED_APPLIED, '1');
   }
 
@@ -254,9 +276,12 @@ const Storage = (() => {
     mergeWords,
     replaceWords,
     seedWordsOnce,
+    getSets,
+    effectiveSet,
+    DEFAULT_SET,
   };
 })();
 
-if (typeof SEED_WORDS !== 'undefined') {
-  Storage.seedWordsOnce(SEED_WORDS);
+if (typeof SEED_SETS !== 'undefined') {
+  Storage.seedWordsOnce(SEED_SETS);
 }
